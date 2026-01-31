@@ -3,7 +3,7 @@
     <div class="hero-content reveal">
       <div class="guest-greeting">
         <p class="dear-text">Dear</p>
-        <h2 class="guest-name writing-animation">{{ guestName }}</h2>
+        <h2 class="guest-name" :class="{ 'writing-animation': animationReady }">{{ guestName }}</h2>
         <p class="invite-text">You are cordially invited to celebrate with us</p>
       </div>
 
@@ -16,9 +16,9 @@
       <p class="pre-title">Together with their families</p>
 
       <div class="names-container">
-        <h1 class="name groom writing-animation delay-2">Vityea</h1>
-        <span class="ampersand writing-animation delay-3">&</span>
-        <h1 class="name bride writing-animation delay-4">Cheata</h1>
+        <h1 class="name groom" :class="{ 'writing-animation delay-2': animationReady }">Vityea</h1>
+        <span class="ampersand" :class="{ 'writing-animation delay-3': animationReady }">&</span>
+        <h1 class="name bride" :class="{ 'writing-animation delay-4': animationReady }">Cheata</h1>
       </div>
 
       <p class="event-type">Engagement Ceremony</p>
@@ -39,6 +39,13 @@
 <script setup>
 import { ref } from 'vue'
 import { ChevronDown } from 'lucide-vue-next'
+
+const props = defineProps({
+  animationReady: {
+    type: Boolean,
+    default: false
+  }
+})
 
 // Static guest name for now - will be dynamic from backend later
 const guestName = ref('Rithy')
@@ -88,6 +95,11 @@ const scrollToContent = () => {
   color: #d4a5a5;
   margin-bottom: 0.5rem;
   line-height: 1.3;
+  clip-path: inset(0 100% 0 0);
+}
+
+.guest-name.writing-animation {
+  clip-path: inset(0 100% 0 0);
 }
 
 .invite-text {
@@ -146,6 +158,7 @@ const scrollToContent = () => {
   color: #5a4a5a;
   line-height: 1.4;
   padding-top: 0.2em;
+  clip-path: inset(0 100% 0 0);
 }
 
 .ampersand {
@@ -154,6 +167,7 @@ const scrollToContent = () => {
   color: #d4a5a5;
   padding: 0.2em 0.1em;
   line-height: 1.4;
+  clip-path: inset(0 100% 0 0);
 }
 
 /* Handwriting Animation */

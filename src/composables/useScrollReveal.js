@@ -1,4 +1,4 @@
-import { onMounted, onUnmounted } from 'vue'
+import { onUnmounted } from 'vue'
 
 export function useScrollReveal(options = {}) {
   const defaultOptions = {
@@ -10,6 +10,8 @@ export function useScrollReveal(options = {}) {
   let observer = null
 
   const initObserver = () => {
+    if (observer) return // Already initialized
+
     observer = new IntersectionObserver((entries) => {
       entries.forEach((entry) => {
         if (entry.isIntersecting) {
@@ -25,11 +27,6 @@ export function useScrollReveal(options = {}) {
     })
   }
 
-  onMounted(() => {
-    // Delay to ensure DOM is ready
-    setTimeout(initObserver, 100)
-  })
-
   onUnmounted(() => {
     if (observer) {
       observer.disconnect()
@@ -37,6 +34,7 @@ export function useScrollReveal(options = {}) {
   })
 
   return {
+    init: initObserver,
     observer
   }
 }

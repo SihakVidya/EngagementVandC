@@ -15,7 +15,7 @@
 
     <!-- Main Content -->
     <main class="main-content" :class="{ 'visible': isOpened }">
-      <HeroSection />
+      <HeroSection :animationReady="animationReady" />
       <InvitationStatement />
       <EventCards />
       <MapSection />
@@ -45,26 +45,41 @@ import RSVPForm from './components/RSVPForm.vue'
 import Footer from './components/Footer.vue'
 
 const isOpened = ref(false)
+const animationReady = ref(false)
 const audioController = ref(null)
 
-// Initialize scroll reveal
-useScrollReveal()
+// Initialize scroll reveal (manual init)
+const { init: initScrollReveal } = useScrollReveal()
 
 const onInvitationOpened = () => {
   isOpened.value = true
 
-  // Start music after components are mounted
+  // Start music and scroll reveal after components are mounted
   nextTick(() => {
     if (audioController.value) {
       audioController.value.startAudio()
     }
+
+    // Delay animations until page is fully visible
+    setTimeout(() => {
+      animationReady.value = true
+      initScrollReveal()
+    }, 1000)
   })
 }
 
 onMounted(() => {
+  // Always start from top on refresh
+  window.scrollTo(0, 0)
+
   // Smooth scroll behavior
   document.documentElement.style.scrollBehavior = 'smooth'
 })
+
+// Also handle browser's scroll restoration
+if ('scrollRestoration' in history) {
+  history.scrollRestoration = 'manual'
+}
 </script>
 
 <style scoped>
