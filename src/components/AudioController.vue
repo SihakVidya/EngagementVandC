@@ -27,7 +27,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref } from 'vue'
 import { Volume2, VolumeX } from 'lucide-vue-next'
 
 const props = defineProps({
@@ -38,7 +38,7 @@ const props = defineProps({
 })
 
 const audioRef = ref(null)
-const isMuted = ref(false)
+const isMuted = ref(true)
 
 const toggleMute = () => {
   if (!audioRef.value) return
@@ -62,37 +62,12 @@ const startAudio = () => {
   audioRef.value.play().then(() => {
     isMuted.value = false
   }).catch(() => {
-    // Autoplay blocked by browser, need user interaction
     isMuted.value = true
   })
 }
 
-onMounted(() => {
-  // Try autoplay immediately
-  startAudio()
-
-  // Also try on any user interaction (for browsers that block autoplay)
-  const tryPlay = () => {
-    if (isMuted.value && audioRef.value) {
-      audioRef.value.play().then(() => {
-        isMuted.value = false
-        cleanup()
-      }).catch(() => {})
-    }
-  }
-
-  const cleanup = () => {
-    document.removeEventListener('click', tryPlay)
-    document.removeEventListener('touchstart', tryPlay)
-    document.removeEventListener('keydown', tryPlay)
-    document.removeEventListener('scroll', tryPlay)
-  }
-
-  document.addEventListener('click', tryPlay)
-  document.addEventListener('touchstart', tryPlay)
-  document.addEventListener('keydown', tryPlay)
-  document.addEventListener('scroll', tryPlay, { passive: true })
-})
+// Expose startAudio so parent can call it
+defineExpose({ startAudio })
 </script>
 
 <style scoped>

@@ -1,15 +1,20 @@
 <template>
   <div class="app">
+    <!-- Envelope Opener -->
+    <EnvelopeOpener @opened="onInvitationOpened" />
+
     <!-- Fixed Background -->
     <div class="background-image" :style="{ backgroundImage: `url(${bgImage})` }"></div>
 
-    <!-- Fixed Elements -->
-    <Logo />
-    <SakuraDecor />
-    <AudioController audioSrc="/music/background.mp3" />
+    <!-- Fixed Elements (show after opened) -->
+    <template v-if="isOpened">
+      <Logo />
+      <SakuraDecor />
+      <AudioController ref="audioController" audioSrc="/music/background.mp3" />
+    </template>
 
     <!-- Main Content -->
-    <main class="main-content">
+    <main class="main-content" :class="{ 'visible': isOpened }">
       <HeroSection />
       <InvitationStatement />
       <EventCards />
@@ -21,13 +26,14 @@
 </template>
 
 <script setup>
-import { onMounted } from 'vue'
+import { ref, onMounted, nextTick } from 'vue'
 import { useScrollReveal } from './composables/useScrollReveal'
 
 // Assets
 import bgImage from '@/assets/bg.webp'
 
 // Components
+import EnvelopeOpener from './components/EnvelopeOpener.vue'
 import Logo from './components/Logo.vue'
 import SakuraDecor from './components/SakuraDecor.vue'
 import AudioController from './components/AudioController.vue'
@@ -38,8 +44,22 @@ import MapSection from './components/MapSection.vue'
 import RSVPForm from './components/RSVPForm.vue'
 import Footer from './components/Footer.vue'
 
+const isOpened = ref(false)
+const audioController = ref(null)
+
 // Initialize scroll reveal
 useScrollReveal()
+
+const onInvitationOpened = () => {
+  isOpened.value = true
+
+  // Start music after components are mounted
+  nextTick(() => {
+    if (audioController.value) {
+      audioController.value.startAudio()
+    }
+  })
+}
 
 onMounted(() => {
   // Smooth scroll behavior
@@ -68,5 +88,11 @@ onMounted(() => {
 .main-content {
   position: relative;
   z-index: 10;
+  opacity: 0;
+  transition: opacity 0.8s ease;
+}
+
+.main-content.visible {
+  opacity: 1;
 }
 </style>
